@@ -216,3 +216,17 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+# BanglishNLP - local datasets and trained models
+data/raw/
+data/processed/
+data/train/
+data/dev/
+data/test/
+
+models/checkpoints/
+models/*.pt
+models/*.pth
+models/*.ckpt
+
+# Local experiment outputs
+experiments/outputs/
