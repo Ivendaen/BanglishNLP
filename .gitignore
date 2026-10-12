@@ -230,3 +230,7 @@ models/*.ckpt
 
 # Local experiment outputs
 experiments/outputs/
+# Downloaded datasets
+data/raw/
+data/processed/
+data/prepared/
