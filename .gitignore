@@ -237,3 +237,5 @@ data/prepared/
 
 # Local annotation datasets
 data/annotations/
+# Pretrained IndicLID model files
+/models/
