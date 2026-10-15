@@ -234,3 +234,6 @@ experiments/outputs/
 data/raw/
 data/processed/
 data/prepared/
+
+# Local annotation datasets
+data/annotations/

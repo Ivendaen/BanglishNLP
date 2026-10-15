@@ -1,69 +1,109 @@
 
 # BanglishNLP Text Cleaning Guidelines
 
-## Objective
-Remove or normalize noise from Bangla-English
-code-mixed text without changing its meaning.
+## 1. Objective
 
-## Cleaning Rules
+Remove or normalize noise from Bangla-English code-mixed text
+without changing the original meaning.
 
-1. URLs
-   - Remove URLs with or without http/https.
-   - Preserve surrounding meaningful text.
+The cleaning module preserves Bangla, English, Romanized Bangla
+(Banglish), numbers, and emojis.
 
-2. User Mentions
-   - Remove English and Bengali @mentions.
-   - Preserve email addresses.
+## 2. Cleaning Rules
 
-3. Whitespace
-   - Replace repeated spaces with one space.
-   - Replace tabs and newlines with one space.
-   - Remove leading and trailing spaces.
+### 2.1 URL Removal
 
-4. Punctuation
-   - !!! becomes !
-   - ??? becomes ?
-   - ... becomes .
-   - ?!?! becomes ?!
-   - !!!??? becomes !?
-   - Preserve meaningful punctuation.
-   - Remove unnecessary spaces immediately before commas, periods, question marks, exclamation marks, semicolons, colons, and Bengali danda (।).
-   - Preserve appropriate spaces after punctuation.
+- Remove URLs beginning with `http://` or `https://`.
+- Remove URLs beginning with `www.`.
+- Remove bare domains with supported extensions,
+  such as `example.com` and `example.org`.
+- Preserve surrounding meaningful text and punctuation.
+- Preserve email addresses.
 
-5. Language Preservation
-   - Do not remove Bangla words.
-   - Do not remove English words.
-   - Do not remove Romanized Bangla words.
-   - Preserve numbers and emojis.
+### 2.2 User Mention Removal
 
-6. Limitations
-   - Do not correct Banglish spellings here.
-   - Do not perform transliteration here.
-   - Do not change sentence meaning.
-   - Record ambiguous cases for team review.
-```
+- Remove English mentions such as `@rahim`.
+- Remove Bengali mentions such as `@রহিম`.
+- Support mentions containing numbers.
+- Do not remove email addresses.
 
-Press **Ctrl + S**.
+### 2.3 Whitespace Normalization
 
-These are the initial guidelines corresponding to your implemented cleaner. You can refine them after reviewing real text.
+- Replace repeated spaces with a single space.
+- Replace tabs and line breaks with a single space.
+- Remove leading and trailing whitespace.
 
-## Step 5.2 — Understand the dataset we'll create next
+### 2.4 Punctuation Normalization
 
-After defining the rules, we'll collect actual noisy sentences and manually specify their correct cleaned outputs.
+- Convert repeated punctuation:
+  - `!!!` to `!`
+  - `???` to `?`
+  - `...` to `.`
+  - `?!?!?` to `?!`
+- Normalize supported mixed punctuation sequences.
+- Remove unnecessary spaces before standard punctuation.
+- Insert missing spaces after commas and periods
+  where appropriate.
+- Preserve decimal numbers and email addresses.
+- Preserve meaningful punctuation.
 
-Your dataset will eventually have a structure like:
+### 2.5 Unicode Punctuation
 
-| ID | Original noisy text | Expected cleaned text |
-|---|---|---|
-| c001 | `Ami     ajke jabo!!!` | `Ami ajke jabo!` |
-| c002 | `@রহিম আমি     ভালো আছি` | `আমি ভালো আছি` |
-| c003 | `Check example.com now` | `Check now` |
-| c004 | `Ami?!?!? ajke jabo` | `Ami?! ajke jabo` |
+Normalize supported Unicode punctuation variants,
+including curly quotation marks and ellipses.
 
-These are examples of the format, not yet real-world evaluation data.
+### 2.6 Language Preservation
 
-We'll collect real sentences, annotate them, remove duplicates, and separate development and test examples.
+- Preserve Bengali-script words.
+- Preserve English words.
+- Preserve Romanized Bangla words.
+- Preserve numbers and emojis.
+- Preserve original capitalization.
 
-**For now, do only Step 5.1:** Create `docs/cleaning_guidelines.md` and save it.
+## 3. Punctuation Modes
 
-Once you've done that, tell me **“done”**, and I'll guide you through collecting your first real text-cleaning dataset, one step at a time.
+The `clean_text()` function supports three modes:
+
+- `normalize`: Normalize supported punctuation (default).
+- `remove`: Remove Unicode punctuation.
+- `keep`: Preserve punctuation while applying other
+  cleaning operations.
+
+## 4. Operations Not Included
+
+The cleaning module does not perform:
+
+- Spelling correction
+- Banglish-to-Bangla transliteration
+- Language identification
+- Tokenization
+- Semantic rewriting
+
+These operations belong to separate BanglishNLP modules.
+
+## 5. Evaluation
+
+Text Cleaning was initially evaluated using 100
+annotated code-mixed sentences.
+
+Results:
+
+- Initial development exact-match accuracy: 93%
+- Improved development exact-match accuracy: 100%
+- Automated unit tests: 25 passed
+
+These are development results because the same examples
+were used to identify and fix errors.
+
+A separate unseen test dataset is required for an
+independent evaluation.
+
+## 6. Known Limitations
+
+- Bare URL detection uses a supported set of common
+  domain extensions.
+- Unusual URLs and punctuation patterns may require
+  additional handling.
+- Current development samples do not cover every
+  cleaning rule equally.
+- Ambiguous annotations should be reviewed manually.
