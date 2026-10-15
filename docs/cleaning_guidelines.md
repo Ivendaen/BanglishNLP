@@ -27,6 +27,8 @@ code-mixed text without changing its meaning.
    - ?!?! becomes ?!
    - !!!??? becomes !?
    - Preserve meaningful punctuation.
+   - Remove unnecessary spaces immediately before commas, periods, question marks, exclamation marks, semicolons, colons, and Bengali danda (।).
+   - Preserve appropriate spaces after punctuation.
 
 5. Language Preservation
    - Do not remove Bangla words.
