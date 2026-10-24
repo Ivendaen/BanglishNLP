@@ -75,3 +75,4 @@ print("Saved to:", output_path)
 print("\nFirst 5 candidates:")
 for item in candidates[:5]:
     print(item["id"], item["text"])
+
