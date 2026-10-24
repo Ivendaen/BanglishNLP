@@ -12,3 +12,5 @@ dependencies = []
 
 [tool.setuptools.packages.find]
 include = ["banglishnlp*"]
+[tool.pytest.ini_options]
+testpaths = ["tests"]

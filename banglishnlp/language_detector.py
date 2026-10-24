@@ -99,6 +99,48 @@ class BanglishLID:
         Restrict to boundaries with >=3 words on each side to reduce false
         positives from isolated loanwords. May miss interleaved code-mixing.
         """
+        
+        # Avoid false code-mixing predictions
+        # on strongly identified English sentences.
+        ftn = self._scores(self.native_model, text)
+        ftr = self._scores(self.roman_model, text)
+
+        strong_english = (
+            ftn.get("eng_Latn", 0.0) >= 0.95
+            and ftr.get("eng_Latn", 0.0) >= 0.995
+            and ftr.get("ben_Latn", 0.0) <= 0.001
+        )
+
+        if strong_english:
+            return False
+
+        # Experimental Romanized Bangla + English switch cues.
+        bangla_cues = {
+            "ami", "amar", "amr", "tumi", "tomar",
+            "apnar", "apnader", "onek", "valo",
+            "bhalo", "ektu", "aktu", "kintu",
+            "ache", "ase", "nai", "hobe", "hoto",
+            "laglo", "lage", "korar", "kore",
+            "chilo", "jonno", "diye", "kharap",
+            "meyad", "abong", "daam", "er",
+            "ta", "te", "ki", "na"
+        }
+
+        english_cues = {
+            "but", "because", "though",
+            "although", "however"
+        }
+
+        word_set = set(
+            re.findall(r"[a-z]+", text.lower())
+        )
+
+        if (
+            len(word_set & bangla_cues) >= 2
+            and word_set & english_cues
+        ):
+            return True
+
         words = LATIN_WORDS.findall(text)[:40]
         if len(words) < 6:
             return False
