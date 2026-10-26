@@ -176,10 +176,66 @@ class BanglishLID:
             if max(scores, key=scores.get, default=None) == 'ben_Beng':
                 return 'BANGLA'
             raise ValueError('Unsupported or uncertain Bengali-script language')
-        if self._roman_code_mix(text):
-            return 'CODE_MIXED'
-        return self._latin_label(text)
+        # Get the existing Latin-script prediction first.
+        try:
+            original = (
+                "CODE_MIXED"
+                if self._roman_code_mix(text)
+                else self._latin_label(text)
+            )
+        except ValueError:
+            original = None
 
+        # Experimental Banglish recognition cues.
+        banglish_cues = {
+            "ami", "amar", "amr",
+            "tumi", "tomar",
+            "apu", "vai", "bhai",
+            "apnar", "apnader",
+            "bari", "koi", "chay",
+            "kotha", "thaka",
+            "kinbo", "kinsan",
+            "kivabe", "kibave",
+            "keno", "ajke",
+            "onek", "valo", "bhalo",
+            "laglo", "jabo", "korbo",
+            "ektu", "aktu",
+            "hocche", "hobe"
+        }
+
+        english_phrases = [
+            r"\bthank\s+you\b",
+            r"\bthanks\s+you\b",
+            r"\bgood\s+luck\b",
+            r"\blove\s+you\b",
+            r"\bsorry\s+to\s+say\b",
+            r"\bto\s+be\s+honest\b",
+            r"\bvery\s+disappointed\b",
+        ]
+
+        words = set(
+            re.findall(r"[a-z]+", text.lower())
+        )
+
+        matches = words & banglish_cues
+
+        has_english_phrase = any(
+            re.search(pattern, text.lower())
+            for pattern in english_phrases
+        )
+
+        # Only reconsider English or uncertain predictions.
+        if original in {"ENGLISH", None} and len(matches) >= 2:
+            if has_english_phrase:
+                return "CODE_MIXED"
+            return "BANGLISH"
+
+        if original is None:
+            raise ValueError(
+                "Uncertain or unsupported Latin-script language"
+            )
+
+        return original
     def batch_predict(self, texts):
         if isinstance(texts, str):
             raise TypeError('Pass a list of texts to batch_predict')
