@@ -79,11 +79,67 @@ The reported performance comes from a small held-out benchmark and may differ on
 
 Only load trusted `.joblib` model files.
 
+
+## Tokenization
+
+BanglishNLP supports Unicode-aware tokenization of Bangla,
+English, Romanized Bangla, and code-mixed text.
+
+The tokenizer preserves token text and character offsets.
+
+See `docs/tokenization.md` for implementation details.
+
+## Token-Level Language Tagging
+
+The token tagger classifies individual tokens into five categories:
+
+- BAN — Bengali-script Bangla
+- ENG — English
+- ROM_BAN — Romanized Bengali
+- OTHER — Punctuation, symbols, numbers, and emojis
+- UNK — Uncertain or unsupported language tokens
+
+### Usage
+
+The trained model must be available at
+`models/token_tagger_v1.joblib`.
+
+```python
+from banglishnlp.token_language_tagger import TokenLanguageTagger
+
+tagger = TokenLanguageTagger()
+
+results = tagger.tag("ami today বাড়ি যাব!")
+
+for item in results:
+    print(item)
+```
+
+### Evaluation
+
+The frozen V1 model was evaluated on 340 human-reviewed tokens
+from 40 held-out sentences.
+
+| Metric | Result |
+|---|---|
+| Accuracy | 97.65% |
+| Macro-F1 (5 classes) | 0.779 |
+| Macro-F1 (4 core classes) | 0.973 |
+| UNK Recall | 0% |
+
+The evaluation sample is small and has not been independently
+adjudicated by a second annotator.
+
+See `docs/token_language_tagging.md` and
+`docs/token_tagger_final_evaluation.md` for details.
+
 ### Project Status
 
 - Text Cleaning — Implemented
-- Language Identification — Implemented and evaluated
-- Tokenization — Next development phase
+- Sentence-Level Language Identification — Implemented and evaluated
+- Tokenization — Implemented and tested
+- Token-Level Language Tagging — Implemented and evaluated
+- End-to-End Pipeline Integration — Planned
 
 ### Acknowledgments
 
